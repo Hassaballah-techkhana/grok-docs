@@ -1,0 +1,78 @@
+openapi: 3.0.0
+servers:
+  - url: '35.242.242.45'
+info:
+  version: "1.0_oas3"
+  title: Grok-Backend
+  description: '# These are Grok backend Webservice Endpoints'
+  contact:
+    name: Mohamed Hassaballah
+tags:
+  - name: Root
+  - name: Authentication
+  - name: Users
+
+paths:
+
+
+  ##############################              Authentication Apis                 ################
+
+  /api/v1/users/sign-in:
+    post:
+      tags:
+        - Users
+      description: Allow Users with correct credentials to sign-in into the application
+      operationId: usersSignIn
+      requestBody:
+        description: users's info needed to sign-in
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignInRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSignInResponse'
+                
+
+
+components:
+
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
+  
+  schemas:
+
+    UserSignInRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "0100213123"
+        password:
+          type: string
+          example: "0100213123"
+      required:
+        - mobileNo
+        - password
+
+    UserSignInResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "0100213123"
+        authToken:
+          type: string
+          example: "0100213123"
+      required:
+        - id
+        - authToken
+
