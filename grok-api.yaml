@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers:
-  - url: 'localhost:3000'
+  - url: 'https://grok-backend-dev.herokuapp.com'
 info:
   version: '1.0'
   title: Grok-Backend
