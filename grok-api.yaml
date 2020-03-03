@@ -15,7 +15,7 @@ tags:
 paths:
   ##############################              Authentication Apis                 ################
 
-  /api/auth/v1/register-mobile:
+  /api/v1/auth/register-mobile:
     post:
       tags:
         - Auth
@@ -37,7 +37,7 @@ paths:
         '409':
           description: mobile number already exists
 
-  /api/auth/v1/verify-mobile:
+  /api/v1/auth/verify-mobile:
     post:
       tags:
         - Auth
@@ -56,7 +56,7 @@ paths:
         '403':
           description: Wrong otp or mobile number
 
-  /api/auth/v1/register-user:
+  /api/v1/auth/register-user:
     post:
       tags:
         - Auth
@@ -79,7 +79,7 @@ paths:
         '404':
           description: Didn't find user
 
-  /api/auth/v1/login-user:
+  /api/v1/auth/login-user:
     post:
       tags:
         - Auth
@@ -102,7 +102,7 @@ paths:
         '404':
           description: Didn't find user
 
-  /api/users/v1/{userId}/change-password:
+  /api/v1/users/{userId}/change-password:
     post:
       tags:
         - Users
@@ -114,14 +114,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/changePassword'
+              $ref: '#/components/schemas/changePasswordRequest'
       parameters:
         - $ref: '#/components/parameters/userIdParam'
         - in: header
           name: Authorization
           schema:
             $ref: '#/components/securitySchemes/bearerAuth'
-            required: true
       responses:
         '200':
           description: OK
@@ -173,7 +172,23 @@ components:
         - password
 
     UserRegisterRequest:
-      $ref: '#/components/schemas/user'
+      type: object
+      properties:
+        username:
+          type: string
+          example: 'johndoo'
+        password:
+          type: string
+          example: '122323'
+        dateOfBirth:
+          type: number
+          example: 13123123
+        gender:
+          type: string
+          enum: ['M', 'F']
+        clientLanguage:
+          type: string
+          enum: ['en', 'ar']
 
     UserLoginResponse:
       type: object
@@ -191,7 +206,7 @@ components:
         - accessToken
         - user
 
-    changePassword:
+    changePasswordRequest:
       type: object
       properties:
         currentPassword:
@@ -209,19 +224,13 @@ components:
     user:
       type: object
       properties:
-        firstName:
-          type: string
-          example: 'John'
-        lastName:
-          type: string
-          example: 'Doo'
         email:
           type: string
           example: 'john@doo.com'
         username:
           type: string
           example: 'johndoo'
-        dob:
+        dateOfBirth:
           type: number
           description: 'date of birth'
           example: 'date number 23241241'
@@ -234,10 +243,7 @@ components:
         clientLanguage:
           type: string
           enum: ['en', 'ar']
-        mobileVerified:
-          type: boolean
-          example: true
-        accountVerified:
+        isVerified:
           type: boolean
           example: true
 
