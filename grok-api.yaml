@@ -36,6 +36,8 @@ paths:
           description: Created user and send otp
         '409':
           description: mobile number already exists
+        '400':
+          description: Bad Request, Invalid Schema
 
   /api/v1/auth/verify-mobile:
     post:
@@ -53,14 +55,27 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserVerifyMobileResponse'
         '403':
           description: Wrong otp or mobile number
+        '400':
+          description: Bad Request, Invalid Schema
+        '422':
+          description: Mobile not verified
 
   /api/v1/auth/register-user:
     post:
       tags:
         - Auth
       description: Allow Users with verified mobile to register
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            $ref: '#/components/securitySchemes/bearerAuth'
       operationId: userRegister
       requestBody:
         description: users's info needed to sign-in
@@ -72,12 +87,12 @@ paths:
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserLoginResponse'
         '404':
           description: Didn't find user
+        '400':
+          description: Bad Request, Invalid Schema
+        '401':
+          description: Mobile not verified
 
   /api/v1/auth/login-user:
     post:
@@ -99,8 +114,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserLoginResponse'
-        '404':
-          description: Didn't find user
+        '401':
+          description: User or password are wrong
+        '400':
+          description: Bad Request, Invalid Schema
 
   /api/v1/users/{userId}/change-password:
     post:
@@ -169,7 +186,33 @@ components:
           description: '4 digit number'
       required:
         - mobile
-        - password
+        - otp
+
+    UserVerifyMobileResponse:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            mobile:
+              type: string
+              example: '0100213123'
+            isVerified:
+              type: boolean
+              default: false
+            id:
+              type: number
+              example: 1231231
+        accessToken:
+          type: string
+          example: 'xaavassfassaasca$3'
+        refreshToken:
+          type: string
+          example: 'xaavassfassaasca$3'
+      required:
+        - refreshToken
+        - accessToken
+        - user
 
     UserRegisterRequest:
       type: object
@@ -250,6 +293,9 @@ components:
         isVerified:
           type: boolean
           example: true
+        id:
+          type: number
+          example: 1231231
 
   parameters:
     userIdParam:
