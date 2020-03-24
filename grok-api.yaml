@@ -11,6 +11,7 @@ info:
 tags:
   - name: Auth
   - name: Users
+  - name: Surveys
 
 paths:
   ##############################              Authentication Apis                 ################
@@ -152,6 +153,46 @@ paths:
         '500':
           description: wasn't able to revoke all other refresh tokens
 
+  /api/v1/surveys/:
+    get:
+      tags:
+        - Surveys
+      description: Get all survey from Survey Monkey
+      operationId: getSurveys
+      parameters:
+        - $ref: '#/components/parameters/userIdParam'
+        - in: header
+          name: Authorization
+          schema:
+            $ref: '#/components/securitySchemes/bearerAuth'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSurveysResponse'
+          
+  /api/v1/surveys/{surveyId}:
+    get:
+      tags:
+        - Surveys
+      description: Get survey by Id
+      operationId: getSurveyById
+      parameters:
+        - $ref: '#/components/parameters/surveyIdParam'
+        - in: header
+          name: Authorization
+          schema:
+            $ref: '#/components/securitySchemes/bearerAuth'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSurveyByIdResponse'
+                
 components:
   securitySchemes:
     bearerAuth: # arbitrary name for the security scheme
@@ -187,7 +228,7 @@ components:
       required:
         - mobile
         - otp
-
+    
     UserVerifyMobileResponse:
       type: object
       properties:
@@ -213,7 +254,7 @@ components:
         - refreshToken
         - accessToken
         - user
-
+        
     UserRegisterRequest:
       type: object
       properties:
@@ -266,7 +307,101 @@ components:
         - refreshToken
         - accessToken
         - user
-      ############### Lookups schemas   ####################
+        
+    GetSurveysResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            example: '1111111'
+          title:
+            type: string
+            example: 'Did you like our service'
+    
+    GetSurveyByIdResponse:
+      type: array
+      items:
+        oneOf:
+          - $ref: '#/components/schemas/SurveyTypeEssay'
+          - $ref: '#/components/schemas/SurveyTypeRating'
+          - $ref: '#/components/schemas/SurveyTypeVerticalTwoCol'
+
+    SurveyTypeEssay:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '1111111'  
+        type:
+          type: string
+          example: 'essay'
+        heading:
+          type: string
+          example: 'Do you have any other comments?'
+          
+    SurveyTypeRating:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '1111111'  
+        type:
+          type: string
+          example: 'rating'
+        heading:
+          type: string
+          example: 'How likely is it that you would recommend this company to a friend or colleague?'
+        answers:
+          type: object
+          properties:
+            rows:
+              type: array
+              items:
+                type: string
+                example: '1111111'
+            choices:
+              type: array
+              items:
+                type: object
+                properties:
+                  heading:
+                    type: string
+                    example: 'Not at all likely - 0'
+                  id:
+                    type: string
+                    example: '1111111'
+                    
+    SurveyTypeVerticalTwoCol:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '1111111'  
+        type:
+          type: string
+          example: 'vertical_two_col'
+        heading:
+          type: string
+          example: 'Overall, how satisfied or dissatisfied are you with our company?'
+        answers:
+          type: object
+          properties:
+            choices:
+              type: array
+              items:
+                type: object
+                properties:
+                  heading:
+                    type: string
+                    example: 'Very satisfied'
+                  id:
+                    type: string
+                    example: '1111111'
+                    
+              
+  ############### Lookups schemas   ####################
 
     user:
       type: object
@@ -305,3 +440,11 @@ components:
       schema:
         type: string
       description: User Identification
+
+    surveyIdParam:
+      in: path
+      name: surveyId
+      required: true
+      schema:
+        type: string
+      description: Survey Identification
