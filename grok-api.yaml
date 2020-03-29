@@ -357,6 +357,9 @@ components:
     CreateSurveyResponse:
       type: object
       properties:
+        pageId:
+          type: string
+          example: '1111111'
         questions:
           type: array
           items:
