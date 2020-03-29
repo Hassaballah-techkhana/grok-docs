@@ -160,7 +160,6 @@ paths:
       description: Get all survey from Survey Monkey
       operationId: getSurveys
       parameters:
-        - $ref: '#/components/parameters/userIdParam'
         - in: header
           name: Authorization
           schema:
@@ -321,12 +320,18 @@ components:
             example: 'Did you like our service'
     
     GetSurveyByIdResponse:
-      type: array
-      items:
-        oneOf:
-          - $ref: '#/components/schemas/SurveyTypeEssay'
-          - $ref: '#/components/schemas/SurveyTypeRating'
-          - $ref: '#/components/schemas/SurveyTypeVerticalTwoCol'
+      type: object
+      properties:
+        pageId:
+          type: string
+          example: '21211221'
+        questions:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/SurveyTypeEssay'
+              - $ref: '#/components/schemas/SurveyTypeRating'
+              - $ref: '#/components/schemas/SurveyTypeVerticalTwoCol'
 
     SurveyTypeEssay:
       type: object
@@ -340,6 +345,9 @@ components:
         heading:
           type: string
           example: 'Do you have any other comments?'
+        position:
+          type: string
+          example: '1'
           
     SurveyTypeRating:
       type: object
@@ -353,14 +361,16 @@ components:
         heading:
           type: string
           example: 'How likely is it that you would recommend this company to a friend or colleague?'
+        position:
+          type: string
+          example: '2'
         answers:
           type: object
           properties:
             rows:
-              type: array
-              items:
-                type: string
-                example: '1111111'
+              type: string
+              example: '1111111'
+                
             choices:
               type: array
               items:
@@ -385,6 +395,10 @@ components:
         heading:
           type: string
           example: 'Overall, how satisfied or dissatisfied are you with our company?'
+        position:
+          type: string
+          example: '3'
+          
         answers:
           type: object
           properties:
