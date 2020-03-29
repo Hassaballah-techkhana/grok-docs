@@ -171,7 +171,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetSurveysResponse'
-          
+
   /api/v1/surveys/{surveyId}:
     get:
       tags:
@@ -191,7 +191,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetSurveyByIdResponse'
-                
+    post:
+      tags:
+        - Surveys
+      description: Create survey Response
+      operationId: createSurveyResponse
+      parameters:
+        - $ref: '#/components/parameters/surveyIdParam'
+        - in: header
+          name: Authorization
+          schema:
+            $ref: '#/components/securitySchemes/bearerAuth'
+      requestBody:
+        description: users's info needed to sign-in
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSurveyResponse'
+      responses:
+        '204':
+          description: No Content
+
 components:
   securitySchemes:
     bearerAuth: # arbitrary name for the security scheme
@@ -227,7 +248,7 @@ components:
       required:
         - mobile
         - otp
-    
+
     UserVerifyMobileResponse:
       type: object
       properties:
@@ -253,7 +274,7 @@ components:
         - refreshToken
         - accessToken
         - user
-        
+
     UserRegisterRequest:
       type: object
       properties:
@@ -306,7 +327,7 @@ components:
         - refreshToken
         - accessToken
         - user
-        
+
     GetSurveysResponse:
       type: array
       items:
@@ -318,7 +339,7 @@ components:
           title:
             type: string
             example: 'Did you like our service'
-    
+
     GetSurveyByIdResponse:
       type: object
       properties:
@@ -333,12 +354,23 @@ components:
               - $ref: '#/components/schemas/SurveyTypeRating'
               - $ref: '#/components/schemas/SurveyTypeVerticalTwoCol'
 
+    CreateSurveyResponse:
+      type: object
+      properties:
+        questions:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/ResponseSurveyTypeEssay'
+              - $ref: '#/components/schemas/ResponseSurveyTypeRating'
+              - $ref: '#/components/schemas/ResponseSurveyTypeVerticalTwoCol'
+
     SurveyTypeEssay:
       type: object
       properties:
         id:
           type: string
-          example: '1111111'  
+          example: '1111111'
         type:
           type: string
           example: 'essay'
@@ -348,13 +380,13 @@ components:
         position:
           type: string
           example: '1'
-          
+
     SurveyTypeRating:
       type: object
       properties:
         id:
           type: string
-          example: '1111111'  
+          example: '1111111'
         type:
           type: string
           example: 'rating'
@@ -370,7 +402,7 @@ components:
             rows:
               type: string
               example: '1111111'
-                
+
             choices:
               type: array
               items:
@@ -382,13 +414,13 @@ components:
                   id:
                     type: string
                     example: '1111111'
-                    
+
     SurveyTypeVerticalTwoCol:
       type: object
       properties:
         id:
           type: string
-          example: '1111111'  
+          example: '1111111'
         type:
           type: string
           example: 'vertical_two_col'
@@ -398,7 +430,6 @@ components:
         position:
           type: string
           example: '3'
-          
         answers:
           type: object
           properties:
@@ -413,9 +444,50 @@ components:
                   id:
                     type: string
                     example: '1111111'
-                    
-              
-  ############### Lookups schemas   ####################
+
+    ResponseSurveyTypeEssay:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '1111111'
+        type:
+          type: string
+          example: 'essay'
+        text:
+          type: string
+          example: 'that was a good survey'
+
+    ResponseSurveyTypeVerticalTwoCol:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '1111111'
+        type:
+          type: string
+          example: 'vertical_two_col'
+        choiceId:
+          type: string
+          example: '1111111'
+
+    ResponseSurveyTypeRating:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '1111111'
+        type:
+          type: string
+          example: 'rating'
+        choiceId:
+          type: string
+          example: '1111111'
+        rowId:
+          type: string
+          example: '1111111'
+
+    ############### Lookups schemas   ####################
 
     user:
       type: object
