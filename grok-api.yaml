@@ -10,8 +10,8 @@ info:
     email: bebofit@aucegypt.edu
 tags:
   - name: Auth
-  - name: Users
   - name: Surveys
+  - name: Me
 
 paths:
   ##############################              Authentication Apis                 ################
@@ -120,10 +120,10 @@ paths:
         '400':
           description: Bad Request, Invalid Schema
 
-  /api/v1/users/{userId}/change-password:
+  /api/v1/me/change-password:
     post:
       tags:
-        - Users
+        - Me
       description: Allow Users with correct credentials to change their passwords
       operationId: userChangePassword
       requestBody:
@@ -134,7 +134,6 @@ paths:
             schema:
               $ref: '#/components/schemas/changePasswordRequest'
       parameters:
-        - $ref: '#/components/parameters/userIdParam'
         - in: header
           name: Authorization
           schema:
@@ -153,6 +152,98 @@ paths:
         '500':
           description: wasn't able to revoke all other refresh tokens
 
+  /api/v1/me/:
+    get:
+      tags:
+        - Me
+      description: Get the user by his Id using the token
+      operationId: getMe
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            $ref: '#/components/securitySchemes/bearerAuth'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+    
+    patch:
+      tags:
+        - Me
+      description: update the user by his Id using the token
+      operationId: updateMe
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            $ref: '#/components/securitySchemes/bearerAuth'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+                
+  /api/v1/me/add-payment:
+    post:
+      tags: 
+        - Me
+      description: add payment method
+      operationId: addPaymentMethod
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            $ref: '#/components/securitySchemes/bearerAuth'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  example: '+2011112455'
+                type:
+                  type: string
+                  enum: ['Vodafone','Etisalat', 'We', 'Orange']
+      responses:
+        '404':
+          description: User was not found
+        '204':
+          description: Added Payment method correctly
+  
+  /api/v1/me/remove-payment:
+     post:
+      tags: 
+        - Me
+      description: remove payment method
+      operationId: removePaymentMethod
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            $ref: '#/components/securitySchemes/bearerAuth'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentId:
+                  type: string
+                  example: '111222112'
+      responses:
+        '404':
+          description: User was not found
+        '204':
+          description: Removed Payment method correctly
+          
   /api/v1/surveys/:
     get:
       tags:
@@ -171,7 +262,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetSurveysResponse'
-
+          
   /api/v1/surveys/{surveyId}:
     get:
       tags:
@@ -212,7 +303,7 @@ paths:
       responses:
         '204':
           description: No Content
-
+                
 components:
   securitySchemes:
     bearerAuth: # arbitrary name for the security scheme
@@ -248,7 +339,7 @@ components:
       required:
         - mobile
         - otp
-
+    
     UserVerifyMobileResponse:
       type: object
       properties:
@@ -260,7 +351,7 @@ components:
               example: '0100213123'
             isVerified:
               type: boolean
-              default: false
+              example: true
             id:
               type: number
               example: 1231231
@@ -274,7 +365,7 @@ components:
         - refreshToken
         - accessToken
         - user
-
+        
     UserRegisterRequest:
       type: object
       properties:
@@ -327,7 +418,7 @@ components:
         - refreshToken
         - accessToken
         - user
-
+        
     GetSurveysResponse:
       type: array
       items:
@@ -339,7 +430,7 @@ components:
           title:
             type: string
             example: 'Did you like our service'
-
+    
     GetSurveyByIdResponse:
       type: object
       properties:
@@ -353,7 +444,7 @@ components:
               - $ref: '#/components/schemas/SurveyTypeEssay'
               - $ref: '#/components/schemas/SurveyTypeRating'
               - $ref: '#/components/schemas/SurveyTypeVerticalTwoCol'
-
+        
     CreateSurveyResponse:
       type: object
       properties:
@@ -373,7 +464,7 @@ components:
       properties:
         id:
           type: string
-          example: '1111111'
+          example: '1111111'  
         type:
           type: string
           example: 'essay'
@@ -383,13 +474,13 @@ components:
         position:
           type: string
           example: '1'
-
+          
     SurveyTypeRating:
       type: object
       properties:
         id:
           type: string
-          example: '1111111'
+          example: '1111111'  
         type:
           type: string
           example: 'rating'
@@ -405,7 +496,7 @@ components:
             rows:
               type: string
               example: '1111111'
-
+                
             choices:
               type: array
               items:
@@ -417,13 +508,13 @@ components:
                   id:
                     type: string
                     example: '1111111'
-
+                    
     SurveyTypeVerticalTwoCol:
       type: object
       properties:
         id:
           type: string
-          example: '1111111'
+          example: '1111111'  
         type:
           type: string
           example: 'vertical_two_col'
@@ -447,39 +538,39 @@ components:
                   id:
                     type: string
                     example: '1111111'
-
+                    
     ResponseSurveyTypeEssay:
       type: object
       properties:
         id:
           type: string
-          example: '1111111'
+          example: '1111111' 
         type:
           type: string
           example: 'essay'
         text:
           type: string
           example: 'that was a good survey'
-
+  
     ResponseSurveyTypeVerticalTwoCol:
       type: object
       properties:
         id:
           type: string
-          example: '1111111'
+          example: '1111111' 
         type:
           type: string
           example: 'vertical_two_col'
         choiceId:
           type: string
           example: '1111111'
-
+          
     ResponseSurveyTypeRating:
       type: object
       properties:
         id:
           type: string
-          example: '1111111'
+          example: '1111111' 
         type:
           type: string
           example: 'rating'
@@ -489,8 +580,8 @@ components:
         rowId:
           type: string
           example: '1111111'
-
-    ############### Lookups schemas   ####################
+          
+  ############### Lookups schemas   ####################
 
     user:
       type: object
@@ -520,6 +611,16 @@ components:
         id:
           type: number
           example: 1231231
+        paymentMethods:
+          type: object
+          properties:
+            mobile:
+              type: string
+              example: '+2011112455'
+            type:
+              type: string
+              enum: ['Vodafone','Etisalat', 'We', 'Orange']
+
 
   parameters:
     userIdParam:
